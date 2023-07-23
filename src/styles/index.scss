@@ -1,0 +1,31 @@
+@use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
+@import './bootstrap/index.scss';
+
+:root {
+  --datahub-color: #33691f;
+  --datahub-color-hover: #709662;
+  --datahub-line-color: rgba(60, 60, 60, 0.29);
+}
+
+[data-bs-theme='dark'] {
+  --bs-body-bg: #1e1e20;
+  --nav-text-color: rgba(255, 255, 255, 0.87);
+  --text-hover-color: var(--datahub-color-hover);
+  --el-dropdown-menuItem-hover-fill: red;
+  --datahub-menu-popover-line: var(--datahub-line-color);
+}
+
+[data-bs-theme='light'] {
+  --nav-text-color: #213547;
+  --text-hover-color: var(--datahub-color-hover);
+  --datahub-menu-popover-line: auto;
+}
+
+.z-fill-height {
+  height: 100%;
+}
+
+.stain {
+  border: 5px solid black;
+  background-color: rgb(51, 255, 153, 0.2) !important;
+}
