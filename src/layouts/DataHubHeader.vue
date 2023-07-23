@@ -5,7 +5,7 @@ import {changeTheme} from '@/utils/Theme'
 import ZDropDown from "@/components/globals/ZDropDown.vue"
 import ZDropDownItem from "@/components/globals/ZDropDownItem.vue";
 import {menuList} from "./config"
-import {Sunny, Moon, Operation, ArrowDown, Menu} from '@element-plus/icons-vue'
+import {Sunny, Moon, ArrowDown, Menu} from '@element-plus/icons-vue'
 
 let isLight = ref(true)
 </script>
@@ -26,7 +26,7 @@ let isLight = ref(true)
               <div class="d-none d-sm-block col-12 col-sm-12 col-md-10 col-lg-6 col-xl-4">
                 <div class="row g-0 justify-content-end">
                   <div v-for="item in menuList" :key="item.value" :class="`col-${item.col}`">
-                    <template v-if="item.href">
+                    <template v-if="'href' in item">
                       <el-link :href="item.href" :underline="false" type="primary">{{ item.value }}</el-link>
                     </template>
                     <template v-else>
@@ -108,9 +108,5 @@ $head-height: 50px;
   span {
     font-size: 14px !important;
   }
-}
-
-.dropdown-item {
-
 }
 </style>
