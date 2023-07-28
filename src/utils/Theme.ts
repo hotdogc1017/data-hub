@@ -1,4 +1,4 @@
-import {useDark, useToggle} from '@vueuse/core'
+import { useDark, useToggle } from '@vueuse/core'
 
 const isDark = useDark({
     selector: 'body',
@@ -7,7 +7,7 @@ const isDark = useDark({
     valueLight: 'light'
 })
 const toggle = useToggle(isDark)
-let timeout: number | undefined
+let timeout: NodeJS.Timeout
 
 export function changeTheme() {
     clearTimeout(timeout)

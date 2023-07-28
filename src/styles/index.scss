@@ -4,7 +4,14 @@
 :root {
   --datahub-color: #33691f;
   --datahub-color-hover: #709662;
+  --datahub-color-light: #94ad7d;
   --datahub-line-color: rgba(60, 60, 60, 0.29);
+  --datahub-text-grey: rgba(0, 0, 0, 0.5);
+  --datahub-box-shadow: var(--el-box-shadow-light);
+}
+
+::selection {
+  background-color: var(--datahub-color-light);
 }
 
 [data-bs-theme='dark'] {

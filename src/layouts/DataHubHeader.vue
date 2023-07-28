@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 import logo from '@/assets/logo.svg'
-import {changeTheme} from '@/utils/Theme'
-import ZDropDown from "@/components/globals/ZDropDown.vue"
-import ZDropDownItem from "@/components/globals/ZDropDownItem.vue";
-import {menuList} from "./config"
-import {Sunny, Moon, ArrowDown, Menu} from '@element-plus/icons-vue'
+import { changeTheme } from '@/utils/Theme'
+import ZDropDown from '@/components/globals/ZDropDown.vue'
+import ZDropDownItem from '@/components/globals/ZDropDownItem.vue'
+import { menuList } from './config'
+import { Sunny, Moon, ArrowDown, Menu } from '@element-plus/icons-vue'
 
 let isLight = ref(true)
 </script>
@@ -23,35 +23,47 @@ let isLight = ref(true)
         <div class="row g-0 align-items-center justify-content-end z-fill-height">
           <div class="col-2 order-3 offset-sm-0 order-sm-2 col-sm-9 col-md-8 col-lg-10">
             <div class="row g-0 align-items-center justify-content-end z-fill-height">
-              <div class="d-none d-sm-block col-12 col-sm-12 col-md-10 col-lg-6 col-xl-4">
+              <div class="d-none d-sm-block col-12 col-sm-12 col-md-10 col-lg-6 col-xl-5 col-xxl-4">
                 <div class="row g-0 justify-content-end">
                   <div v-for="item in menuList" :key="item.value" :class="`col-${item.col}`">
-                    <template v-if="'href' in item">
-                      <el-link :href="item.href" :underline="false" type="primary">{{ item.value }}</el-link>
-                    </template>
-                    <template v-else>
-                      <div class="row g-0 align-items-center justify-content-end z-fill-height">
+                    <div class="row g-0 align-items-center justify-content-end z-fill-height">
+                      <template v-if="'href' in item">
+                        <el-link :href="item.href" :underline="false" type="primary">{{
+                          item.value
+                        }}</el-link>
+                      </template>
+                      <template v-else>
                         <ZDropDown class="dropdown" style="top: 0.5px">
                           <span style="font-size: 14px">
                             {{ item.value }}
                             <el-icon class="el-icon--right">
-                              <ArrowDown/>
+                              <ArrowDown />
                             </el-icon>
                           </span>
                           <template #dropdown>
-                            <ZDropDownItem class="dropdown-item" v-for="{value: val, href} in item.items" :key="val">
-                              <el-link class="link" :href="href" :underline="false" type="primary">{{ val }}</el-link>
+                            <ZDropDownItem
+                              class="dropdown-item"
+                              v-for="{ value: val, href } in item.items"
+                              :key="val"
+                            >
+                              <el-link
+                                class="link"
+                                :href="href"
+                                :underline="false"
+                                type="primary"
+                                >{{ val }}</el-link
+                              >
                             </ZDropDownItem>
                           </template>
                         </ZDropDown>
-                      </div>
-                    </template>
+                      </template>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="col d-block d-sm-none">
                 <el-icon style="top: 4px; right: 10px" :size="20">
-                  <Menu :size="20"/>
+                  <Menu :size="20" />
                 </el-icon>
               </div>
             </div>
@@ -60,14 +72,14 @@ let isLight = ref(true)
           <div class="col-4 order-2 order-sm-3 col-sm-2 col-md-2 col-lg-1">
             <div class="row g-0 align-items-center justify-content-end z-fill-height">
               <div class="col">
-                <el-divider direction="vertical"/>
+                <el-divider direction="vertical" />
                 <el-switch
-                    style="top: 1px"
-                    @change="changeTheme"
-                    v-model="isLight"
-                    inline-prompt
-                    :active-icon="Sunny"
-                    :inactive-icon="Moon"
+                  style="top: 1px"
+                  @change="changeTheme"
+                  v-model="isLight"
+                  inline-prompt
+                  :active-icon="Sunny"
+                  :inactive-icon="Moon"
                 />
                 <!-- <el-divider direction="vertical" /> -->
               </div>

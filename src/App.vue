@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DataHubHeader from '@/layouts/DataHubHeader.vue'
-import DataHubBody from '@/layouts/DataHubBody.vue'
 </script>
 
 <template>
@@ -9,23 +8,25 @@ import DataHubBody from '@/layouts/DataHubBody.vue'
       <DataHubHeader></DataHubHeader>
     </nav>
     <div class="body">
-      <DataHubBody></DataHubBody>
+      <RouterView to="/"></RouterView>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-$height: 50px;
 .nav {
   width: 100%;
-  height: $height;
+  height: 50px;
   position: fixed;
   top: 0;
   z-index: 999;
   background-color: var(--bs-body-bg);
 }
-
 .body {
-  padding: $height 0;
+  height: 500px;
+  padding: 50px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

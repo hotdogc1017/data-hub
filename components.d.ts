@@ -7,24 +7,18 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    DataHubBody: typeof import('./src/layouts/DataHubBody.vue')['default']
-    DataHubHeader: typeof import('./src/layouts/DataHubHeader.vue')['default']
-    ElButton: typeof import('element-plus/es')['ElButton']
     ElDivider: typeof import('element-plus/es')['ElDivider']
-    ElDropdown: typeof import('element-plus/es')['ElDropdown']
-    ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
-    ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElLink: typeof import('element-plus/es')['ElLink']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     MonacoDiffEditor: typeof import('./src/components/globals/MonacoDiffEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ZDropDown: typeof import('./src/components/globals/ZDropDown.vue')['default']
     ZDropDownItem: typeof import('./src/components/globals/ZDropDownItem.vue')['default']
     ZDropDownMenu: typeof import('./src/components/globals/ZDropDownMenu.vue')['default']
-    ZlineBlock: typeof import('./src/components/globals/ZlineBlock.vue')['default']
   }
 }
