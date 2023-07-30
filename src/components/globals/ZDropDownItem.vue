@@ -1,6 +1,4 @@
-<script lang="ts" setup>
-
-</script>
+<script lang="ts" setup></script>
 
 <template>
   <div class="dropdown-item__container">
@@ -20,14 +18,15 @@
   cursor: pointer;
 
   span {
-    transition: color .3s;
+    transition: color 0.3s;
   }
 }
 
 .dropdown-item__container:hover {
-  ::v-deep a, span {
+  :deep(a),
+  span {
     color: var(--text-hover-color);
-    transition: color .3s;
+    transition: color 0.3s;
   }
 }
 </style>

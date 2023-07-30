@@ -8,10 +8,25 @@
   --datahub-line-color: rgba(60, 60, 60, 0.29);
   --datahub-text-grey: rgba(0, 0, 0, 0.5);
   --datahub-box-shadow: var(--el-box-shadow-light);
+  --datahub-select-text-color: unset;
+}
+
+ul {
+  padding: 0;
+}
+li {
+  list-style: none;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
 ::selection {
   background-color: var(--datahub-color-light);
+  color: var(--datahub-select-text-color);
 }
 
 [data-bs-theme='dark'] {
@@ -20,6 +35,7 @@
   --text-hover-color: var(--datahub-color-hover);
   --el-dropdown-menuItem-hover-fill: red;
   --datahub-menu-popover-line: var(--datahub-line-color);
+  --datahub-select-text-color: black;
 }
 
 [data-bs-theme='light'] {

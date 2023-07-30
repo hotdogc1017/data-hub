@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import ZDropDown from "@/components/globals/ZDropDown.vue";
-import ZDropDownItem from "@/components/globals/ZDropDownItem.vue";
+import ZDropDown from '@/components/globals/ZDropDown.vue'
+import ZDropDownItem from '@/components/globals/ZDropDownItem.vue'
 </script>
 
 <template>
@@ -17,7 +17,7 @@ import ZDropDownItem from "@/components/globals/ZDropDownItem.vue";
 
 <style lang="scss" scoped>
 .body-container {
-  height: 800px;
+  min-height: 800px;
   display: flex;
   align-items: center;
   justify-content: center;
