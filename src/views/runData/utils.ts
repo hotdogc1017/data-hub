@@ -34,6 +34,7 @@ export type StateInfo = {
     'state'
   >
 } & { readonly waiting: Omit<TaskState & { isNormal: boolean; topic?: string }, 'state'> }
+
 export function getStateInfo(): StateInfo {
   let obj: StateInfo | {} = {}
   Object.assign(obj, {

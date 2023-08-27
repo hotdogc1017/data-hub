@@ -1,24 +1,14 @@
 @mixin default-active {
-  transition: opacity .3s, transform .3s;
+  transition: opacity 0.3s, transform 0.3s;
 }
 
 .popover-enter-active,
 .popover-leave-active {
-  @include default-active
+  @include default-active;
 }
-
-//.popover-leave-active {
-//  transition: opacity .2s, transform .2s;
-//}
-
-//.popover-enter-from {
-//  opacity: 0;
-//  transform: translateY(-5px);
-//}
 
 .popover-enter-from,
 .popover-leave-to {
   opacity: 0.1;
-  //transform: translateY(-5px);
   transform: translateY(-50px) scale(0);
 }

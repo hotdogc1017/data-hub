@@ -1,15 +1,44 @@
 <script lang="ts" setup>
 import { ref, onBeforeMount } from 'vue'
-import { BodyBaseLayout } from '@/views/runData/hooks'
+import { ElMessageBox as msgBox, ElMessage as msg } from 'element-plus'
+import { Refresh, Search, Delete, CloseBold, VideoPlay, VideoPause } from '@element-plus/icons-vue'
 import { type TaskMode, getStateInfo } from '@/views/runData/utils'
-import { Refresh, Search, Delete } from '@element-plus/icons-vue'
+import { post, namedAxios } from '@/utils/request'
 
+const axios = namedAxios('runData')
 let list = ref<TaskMode[]>([])
+let pointerIndex = ref<number | null>()
 const stateInfo = ref(getStateInfo())
+let started = ref(false)
+
+function flush() {
+  axios.post<TaskMode[]>('').then(({ data }) => (list.value = data))
+}
+
+function removeOne(task: TaskMode) {
+  axios.post('').then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
+}
+
+function removeAll() {
+  msgBox
+    .confirm('这将会移除所有[等待中]的任务，要继续吗？', 'Warning')
+    .then(() => axios.post(''))
+    .then(() => flush())
+    .then(() => msg.success('移除成功'))
+    .catch(() => {})
+}
+
+function startOrPause() {
+  started.value = !started.value
+}
 
 onBeforeMount(() => {
   // 在这里发起请求，给list赋值
   list.value.push({
+    state: {
+      state: 'running',
+      description: 'fk'
+    },
     brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
     handleType: {
       title: '更新',
@@ -24,6 +53,10 @@ onBeforeMount(() => {
     endDateTime: ''
   })
   list.value.push({
+    state: {
+      state: 'finish',
+      description: 'fk'
+    },
     brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
     handleType: {
       title: '更新',
@@ -213,25 +246,49 @@ onBeforeMount(() => {
     <div class="row justify-content-center" style="margin-top: 25px">
       <div class="col col-md-11 col-lg-10">
         <div class="task-list__header">
-          <el-button :icon="Refresh" circle />
-          <el-button :icon="Search" circle />
-          <el-button :icon="Delete" circle />
-          <el-button round>创建任务</el-button>
+          <el-button @click="flush()" :icon="Refresh" circle />
+          <el-button :icon="Search" disabled="" circle />
+          <el-button @click="removeAll()" :icon="Delete" circle />
+          <el-button
+            @click="startOrPause()"
+            :type="started ? 'danger' : 'success'"
+            :icon="started ? VideoPause : VideoPlay"
+            circle
+          />
+          <el-button disabled="" round>创建任务</el-button>
+          <el-button type="text" disabled="" round>> 查看历史任务</el-button>
         </div>
         <ul class="row">
           <el-backtop :right="50" :bottom="100" />
           <li
+            style="position: relative"
             class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2"
-            v-for="{
-              brand,
-              state,
-              handleType,
-              mappingHandleType,
-              createTime,
-              startDateTime,
-              endDateTime
-            } in list"
+            v-for="(
+              {
+                brand,
+                state,
+                handleType,
+                mappingHandleType,
+                createTime,
+                startDateTime,
+                endDateTime
+              },
+              index
+            ) in list"
+            @mouseenter="pointerIndex = index"
+            @mouseleave="pointerIndex = null"
           >
+            <Transition name="el-fade-in" :duration="500">
+              <el-button
+                @click="removeOne(list[index])"
+                v-if="(pointerIndex || pointerIndex === 0) && pointerIndex === index && !state"
+                type="danger"
+                size="small"
+                :icon="CloseBold"
+                class="task-list__delete"
+                circle
+              ></el-button>
+            </Transition>
             <div class="task-list__content">
               <div class="task-list__content--head">
                 <div class="task-list__content--head-title">
@@ -274,6 +331,11 @@ onBeforeMount(() => {
   width: 100%;
 }
 .task-list__header {
+}
+.task-list__delete {
+  position: absolute;
+  right: 5px;
+  top: 15px;
 }
 .task-list__content:hover {
   border-color: var(--datahub-color);
