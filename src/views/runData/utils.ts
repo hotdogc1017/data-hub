@@ -14,7 +14,7 @@ export interface TaskState {
   state: keyof typeof State
   description: string
 }
-export interface PrecheckFail extends TaskState {
+export interface PreCheckFail extends TaskState {
   brand: string
 }
 export interface TaskMode {

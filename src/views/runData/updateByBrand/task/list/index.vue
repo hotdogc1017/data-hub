@@ -255,8 +255,8 @@ onBeforeMount(() => {
             :icon="started ? VideoPause : VideoPlay"
             circle
           />
-          <el-button disabled="" round>创建任务</el-button>
-          <el-button type="text" disabled="" round>> 查看历史任务</el-button>
+          <el-button disabled round>创建任务</el-button>
+          <el-button type="text" disabled round>> 查看历史任务</el-button>
         </div>
         <ul class="row">
           <el-backtop :right="50" :bottom="100" />
@@ -307,7 +307,7 @@ onBeforeMount(() => {
                     <span>结束时间：{{ endDateTime || '未结束' }}</span>
                   </li>
                   <li>
-                    <span>es处理方式：{{ handleType?.title || '忽略' }}</span>
+                    <span>es处理方式: {{ handleType?.title || '忽略' }}</span>
                   </li>
                   <li>
                     <span>映射处理方式：{{ mappingHandleType?.title || '忽略' }}</span>

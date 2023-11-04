@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import {} from 'vue'
-import { type PrecheckFail } from '@/views/runData/utils'
+import { type PreCheckFail } from '@/views/runData/utils'
 
 const props = defineProps<{
-  /** 获取失败原因 */
-  list: PrecheckFail[]
+  /* 获取失败原因 */
+  list: PreCheckFail[]
 }>()
 </script>
 

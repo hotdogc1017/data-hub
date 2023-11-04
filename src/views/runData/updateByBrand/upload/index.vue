@@ -31,7 +31,7 @@ function handleResult(result: State) {
         <template v-else>
           <upload-result
             :success-or-fail="isSuccess"
-            @jump="(result) => handleResult(result)"
+            @jump="(result: State) => handleResult(result)"
           ></upload-result>
         </template>
       </div>
