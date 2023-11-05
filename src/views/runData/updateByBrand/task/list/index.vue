@@ -12,17 +12,17 @@ const stateInfo = ref(getStateInfo())
 let started = ref(false)
 
 function flush() {
-  axios.post<TaskMode[]>('').then(({ data }) => (list.value = data))
+  axios.post<TaskMode[]>('getTask').then(({ data }) => (list.value = data))
 }
 
 function removeOne(task: TaskMode) {
-  axios.post('').then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
+  axios.post('remove').then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
 }
 
 function removeAll() {
   msgBox
     .confirm('这将会移除所有[等待中]的任务，要继续吗？', 'Warning')
-    .then(() => axios.post(''))
+    .then(() => axios.post('removeAll'))
     .then(() => flush())
     .then(() => msg.success('移除成功'))
     .catch(() => {})
