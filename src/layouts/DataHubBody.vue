@@ -14,12 +14,3 @@ import ZDropDownItem from '@/components/globals/ZDropDownItem.vue'
     </ZDropDown>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.body-container {
-  min-height: 800px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>

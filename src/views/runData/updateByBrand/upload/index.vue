@@ -1,54 +1,66 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { State } from '@/views/runData/utils'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { State, type TaskMode, type PreCheckFail as Failed } from '@/views/runData/utils'
 import { UploadFilled } from '@element-plus/icons-vue'
-import { UploadResult } from '@/views/runData/hooks'
+import { namedAxios } from '@/utils/request'
+import PreCheckFail from '@/views/runData/updateByBrand/upload/precheckFail/index.vue'
+import { ElMessage } from 'element-plus'
 
-let isSuccess = ref<boolean | undefined>()
+const router = useRouter()
+const axios = namedAxios('runData')
+let failedList = ref<Failed[]>([])
+let switchUpload = ref(true)
+let hasFailed = computed(() => failedList.value.length !== 0 && !switchUpload.value)
 
-function handleResult(result: State) {
-  console.log(result)
+function handleSuccess(res: TaskMode[]) {
+  axios
+    .post<Failed[]>('/preCheck', res)
+    .then(({ data }) => {
+      if (data && Array.isArray(data) && data.length !== 0) {
+        failedList.value = data
+        switchUpload.value = false
+        ElMessage.error('文件内容有误，请检查后重新上传')
+        throw new Error()
+      } else {
+        return axios.post('/upload', res)
+      }
+    })
+    .then(() => {
+      router.push({ name: 'list' })
+    })
 }
 </script>
 
 <template>
-  <div class="upload container-fluid">
-    <div class="row justify-content-center align-item-center">
-      <div class="col-12 col-sm-8 col-md-6 col-xl-4">
-        <template v-if="typeof isSuccess === 'undefined'">
-          <el-upload
-            drag
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-            multiple
+  <div class="h-full flex justify-center" :class="{ 'items-center': !hasFailed }">
+    <template v-if="!hasFailed">
+      <div class="flex flex-col">
+        <el-upload
+          drag
+          action="http://localhost:9001/runData/readByExcel"
+          multiple
+          :on-success="handleSuccess"
+        >
+          <el-icon color="#999" size="50"><upload-filled /></el-icon>
+          <div>点击或者拖动文件上传</div>
+          <template #tip>
+            <div class="py-4">只能上传excel文件, 且行数最好不要超过一万行</div>
+          </template>
+        </el-upload>
+        <div class="py-4 flex justify-end">
+          <el-button
+            v-if="failedList.length !== 0"
+            type="danger"
+            @click="switchUpload = false"
+            round
+            >查看错误</el-button
           >
-            <el-icon color="#999" size="50"><upload-filled /></el-icon>
-            <div>点击或者拖动文件上传</div>
-            <template #tip>
-              <div style="margin-top: 20px">文件大小不能超过500kb</div>
-            </template>
-          </el-upload>
-        </template>
-        <template v-else>
-          <upload-result
-            :success-or-fail="isSuccess"
-            @jump="(result: State) => handleResult(result)"
-          ></upload-result>
-        </template>
+        </div>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <PreCheckFail :list="failedList" @reupload="switchUpload = true"></PreCheckFail>
+    </template>
   </div>
 </template>
-
-<style lang="scss" scoped>
-:deep(.el-upload-dragger) {
-  background-color: var(--bs-body-bg);
-}
-.upload-container {
-  height: 100px;
-  //   box-shadow: var(--datahub-box-shadow);
-  .upload__text {
-    font-size: 50px;
-    color: var(--datahub-text-grey);
-  }
-}
-</style>

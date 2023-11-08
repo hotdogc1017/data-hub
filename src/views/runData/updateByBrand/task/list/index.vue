@@ -1,22 +1,29 @@
 <script lang="ts" setup>
 import { ref, onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessageBox as msgBox, ElMessage as msg } from 'element-plus'
 import { Refresh, Search, Delete, CloseBold, VideoPlay, VideoPause } from '@element-plus/icons-vue'
 import { type TaskMode, getStateInfo } from '@/views/runData/utils'
-import { post, namedAxios } from '@/utils/request'
+import { namedAxios } from '@/utils/request'
 
+const router = useRouter()
 const axios = namedAxios('runData')
 let list = ref<TaskMode[]>([])
 let pointerIndex = ref<number | null>()
 const stateInfo = ref(getStateInfo())
-let started = ref(false)
+let started = ref<boolean>()
+let timeout: number | undefined
 
-function flush() {
-  axios.post<TaskMode[]>('getTask').then(({ data }) => (list.value = data))
+async function flush() {
+  const { data } = await axios.post<TaskMode[]>('getTask')
+  return (list.value = data)
 }
 
 function removeOne(task: TaskMode) {
-  axios.post('remove').then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
+  axios
+    .post('remove', new URLSearchParams({ brand: task.brand }))
+    .then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
+    .then(() => flush())
 }
 
 function removeAll() {
@@ -28,356 +35,87 @@ function removeAll() {
     .catch(() => {})
 }
 
-function startOrPause() {
-  started.value = !started.value
+function startOrPause(shutdown?: boolean) {
+  if (!started.value) {
+    ;(started.value === void 0 ? axios.post('doTest') : Promise.resolve())
+      .then(() => (started.value = !started.value))
+      .then(() => startOrPause(false))
+  } else {
+    if (shutdown) {
+      started.value = !started.value
+      clearTimeout(timeout)
+    } else {
+      timeout = setTimeout(async () => {
+        await flush()
+        startOrPause(false)
+      }, 1000 * 60 * 5)
+    }
+  }
 }
 
 onBeforeMount(() => {
-  // 在这里发起请求，给list赋值
-  list.value.push({
-    state: {
-      state: 'running',
-      description: 'fk'
-    },
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    state: {
-      state: 'finish',
-      description: 'fk'
-    },
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
-  list.value.push({
-    brand: 'TEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    handleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    mappingHandleType: {
-      title: '更新',
-      operationType: 'update'
-    },
-    createTime: '2023-07-29 10:10:00',
-    startDateTime: '2023-07-29 10:10:00',
-    endDateTime: ''
-  })
+  flush()
 })
 </script>
 
 <template>
-  <div class="task-list__container container-fluid">
-    <div class="row justify-content-center" style="margin-top: 25px">
-      <div class="col col-md-11 col-lg-10">
-        <div class="task-list__header">
-          <el-button @click="flush()" :icon="Refresh" circle />
-          <el-button :icon="Search" disabled="" circle />
-          <el-button @click="removeAll()" :icon="Delete" circle />
+  <div>
+    <div class="py-6">
+      <el-button @click="flush()" :icon="Refresh" circle />
+      <el-button :icon="Search" disabled="" circle />
+      <el-button @click="removeAll()" :icon="Delete" circle />
+      <el-button
+        @click="startOrPause(true)"
+        :type="started ? 'danger' : 'success'"
+        :icon="started ? VideoPause : VideoPlay"
+        circle
+      />
+      <el-button @click="router.push({ name: 'upload' })" round>创建任务</el-button>
+    </div>
+    <ul class="flex flex-wrap">
+      <el-backtop :right="50" :bottom="100" />
+      <el-card
+        shadow="never"
+        :body-class="'!py-1 !px-2'"
+        class="h-fit w-2/5 sm:w-1/3 md:w-1/5 lg:w-1/4 xl:w-1/4 bg-white !rounded-lg flex flex-col justify-between hover:border-primary hover:cursor-pointer"
+        v-for="(
+          { brand, state, handleType, mappingHandleType, createTime, startDateTime, endDateTime },
+          index
+        ) in list"
+        @mouseenter="pointerIndex = index"
+        @mouseleave="pointerIndex = null"
+      >
+        <!-- <Transition name="el-fade-in" :duration="500">
           <el-button
-            @click="startOrPause()"
-            :type="started ? 'danger' : 'success'"
-            :icon="started ? VideoPause : VideoPlay"
+            @click="removeOne(list[index])"
+            v-if="(pointerIndex || pointerIndex === 0) && pointerIndex === index && !state"
+            type="danger"
+            size="small"
+            :icon="CloseBold"
             circle
-          />
-          <el-button disabled round>创建任务</el-button>
-          <el-button type="text" disabled round>> 查看历史任务</el-button>
-        </div>
-        <ul class="row">
-          <el-backtop :right="50" :bottom="100" />
-          <li
-            style="position: relative"
-            class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2"
-            v-for="(
-              {
-                brand,
-                state,
-                handleType,
-                mappingHandleType,
-                createTime,
-                startDateTime,
-                endDateTime
-              },
-              index
-            ) in list"
-            @mouseenter="pointerIndex = index"
-            @mouseleave="pointerIndex = null"
-          >
-            <Transition name="el-fade-in" :duration="500">
-              <el-button
-                @click="removeOne(list[index])"
-                v-if="(pointerIndex || pointerIndex === 0) && pointerIndex === index && !state"
-                type="danger"
-                size="small"
-                :icon="CloseBold"
-                class="task-list__delete"
-                circle
-              ></el-button>
-            </Transition>
-            <div class="task-list__content">
-              <div class="task-list__content--head">
-                <div class="task-list__content--head-title">
-                  <h6>{{ brand }}</h6>
-                </div>
-                <el-tag :type="stateInfo[state?.state ?? 'waiting'].topic">{{
-                  stateInfo[state?.state ?? 'waiting'].description
-                }}</el-tag>
-              </div>
-              <div>
-                <ul class="task-list__content--body">
-                  <li>
-                    <span>开始时间：{{ startDateTime || '未开始' }}</span>
-                  </li>
-                  <li>
-                    <span>结束时间：{{ endDateTime || '未结束' }}</span>
-                  </li>
-                  <li>
-                    <span>es处理方式: {{ handleType?.title || '忽略' }}</span>
-                  </li>
-                  <li>
-                    <span>映射处理方式：{{ mappingHandleType?.title || '忽略' }}</span>
-                  </li>
-                  <!-- <li>
-                  <span>创建时间：{{ createTime }}</span>
-                </li> -->
-                </ul>
-              </div>
-            </div>
+          ></el-button>
+        </Transition> -->
+        <ul class="">
+          <li class="flex justify-between">
+            <p class="truncate">{{ brand }}</p>
+            <el-tag :type="stateInfo[state?.state ?? 'waiting'].topic">{{
+              stateInfo[state?.state ?? 'waiting'].description
+            }}</el-tag>
+          </li>
+          <li class="py-1 text-xs text-slate-500">
+            <span>开始时间：{{ startDateTime || '未开始' }}</span>
+          </li>
+          <li class="py-1 text-xs text-slate-500">
+            <span>结束时间：{{ endDateTime || '未结束' }}</span>
+          </li>
+          <li class="py-1 text-xs text-slate-500">
+            <span>es处理方式: {{ handleType?.title || '忽略' }}</span>
+          </li>
+          <li class="pt-1 text-xs text-slate-500">
+            <span>映射处理方式：{{ mappingHandleType?.title || '忽略' }}</span>
           </li>
         </ul>
-      </div>
-    </div>
+      </el-card>
+    </ul>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.task-list__container {
-  height: 100%;
-  width: 100%;
-}
-.task-list__header {
-}
-.task-list__delete {
-  position: absolute;
-  right: 5px;
-  top: 15px;
-}
-.task-list__content:hover {
-  border-color: var(--datahub-color);
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
-.task-list__content {
-  margin-top: 20px;
-  border-radius: 10px;
-  box-shadow: var(--datahub-box-shadow);
-  border: 1px solid var(--datahub-line-color);
-  transition: border-color 0.3s ease;
-  .task-list__content--body {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 10px;
-    li {
-      padding: 5px 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      span {
-        font-size: 12px;
-        color: var(nav-text-color);
-      }
-    }
-  }
-  .task-list__content--head {
-    display: flex;
-    padding: 0 10px;
-    padding-top: 5px;
-    .el-tag {
-      margin-left: 10px;
-    }
-    .task-list__content--head-title {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      h6 {
-        display: inline;
-      }
-    }
-  }
-}
-</style>

@@ -13,12 +13,17 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
       '~/': `${path.resolve(__dirname, 'src')}/`
     }
   },
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('lottie-')
+        }
+      }
+    }),
     vueJsx(),
     AutoImport({
       resolvers: [ElementPlusResolver()]
