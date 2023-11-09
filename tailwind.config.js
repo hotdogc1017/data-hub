@@ -8,7 +8,8 @@ module.exports = {
         primary: {
           DEFAULT: '#33691f',
           light: '#629749',
-          dark: '#003d00'
+          dark: '#003d00',
+          bg: '#62974933'
         }
       },
       height: {

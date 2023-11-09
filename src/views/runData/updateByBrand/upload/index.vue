@@ -6,14 +6,17 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { namedAxios } from '@/utils/request'
 import PreCheckFail from '@/views/runData/updateByBrand/upload/precheckFail/index.vue'
 import { ElMessage } from 'element-plus'
+import { useLoading } from '@/stores/loading'
 
 const router = useRouter()
 const axios = namedAxios('runData')
+const loading = useLoading()
 let failedList = ref<Failed[]>([])
 let switchUpload = ref(true)
 let hasFailed = computed(() => failedList.value.length !== 0 && !switchUpload.value)
 
 function handleSuccess(res: TaskMode[]) {
+  loading.load()
   axios
     .post<Failed[]>('/preCheck', res)
     .then(({ data }) => {
@@ -29,6 +32,7 @@ function handleSuccess(res: TaskMode[]) {
     .then(() => {
       router.push({ name: 'list' })
     })
+    .finally(loading.unload)
 }
 </script>
 
@@ -49,6 +53,9 @@ function handleSuccess(res: TaskMode[]) {
           </template>
         </el-upload>
         <div class="py-4 flex justify-end">
+          <el-button type="primary" @click="router.push({ name: 'list' })" round
+            >任务列表</el-button
+          >
           <el-button
             v-if="failedList.length !== 0"
             type="danger"

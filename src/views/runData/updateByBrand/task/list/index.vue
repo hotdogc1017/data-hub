@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox as msgBox, ElMessage as msg } from 'element-plus'
 import { Refresh, Search, Delete, CloseBold, VideoPlay, VideoPause } from '@element-plus/icons-vue'
 import { type TaskMode, getStateInfo } from '@/views/runData/utils'
 import { namedAxios } from '@/utils/request'
+import { useLoading } from '@/stores/loading'
 
+const loading = useLoading()
 const router = useRouter()
 const axios = namedAxios('runData')
 let list = ref<TaskMode[]>([])
@@ -14,21 +16,45 @@ const stateInfo = ref(getStateInfo())
 let started = ref<boolean>()
 let timeout: number | undefined
 
-async function flush() {
-  const { data } = await axios.post<TaskMode[]>('getTask')
-  return (list.value = data)
+let successOfPercentage = computed(() => {
+  return (list.value.filter(({ state }) => !!state).length / list.value.length) * 100 || 1
+})
+
+function flush(showTip: boolean = false) {
+  loading.load()
+  axios
+    .post<TaskMode[]>('getTask')
+    .then(({ data }) => {
+      showTip &&
+        msg({
+          type: 'success',
+          grouping: true,
+          message: `刷新成功，共 ${data.length} 条任务`
+        })
+      list.value = data
+    })
+    .finally(loading.unload)
 }
 
 function removeOne(task: TaskMode) {
-  axios
-    .post('remove', new URLSearchParams({ brand: task.brand }))
-    .then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
-    .then(() => flush())
+  msgBox
+    .alert('确定要移除该任务吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      showCancelButton: true,
+      type: 'warning'
+    })
+    .then(() => {
+      axios
+        .post('remove', new URLSearchParams({ brand: task.brand }))
+        .then(() => msg.success(`品牌：${task.brand}所关联的任务已被移除`))
+        .then(() => flush())
+    })
 }
 
 function removeAll() {
   msgBox
-    .confirm('这将会移除所有[等待中]的任务，要继续吗？', 'Warning')
+    .confirm('这将会移除所有[等待中]的任务，要继续吗？', '提示')
     .then(() => axios.post('removeAll'))
     .then(() => flush())
     .then(() => msg.success('移除成功'))
@@ -61,8 +87,10 @@ onBeforeMount(() => {
 <template>
   <div>
     <div class="py-6">
-      <el-button @click="flush()" :icon="Refresh" circle />
-      <el-button :icon="Search" disabled="" circle />
+      <el-button @click="flush(true)" :icon="Refresh" circle />
+      <el-badge class="mx-4" value="⏳" type="primary">
+        <el-button :icon="Search" disabled="" circle />
+      </el-badge>
       <el-button @click="removeAll()" :icon="Delete" circle />
       <el-button
         @click="startOrPause(true)"
@@ -72,12 +100,25 @@ onBeforeMount(() => {
       />
       <el-button @click="router.push({ name: 'upload' })" round>创建任务</el-button>
     </div>
-    <ul class="flex flex-wrap">
+    <el-progress
+      v-if="started !== void 0"
+      class="pb-6"
+      :percentage="successOfPercentage"
+      :stroke-width="15"
+      status="success"
+      :show-text="successOfPercentage === 100"
+      :striped="successOfPercentage !== 100"
+      :text-inside="successOfPercentage === 100"
+      striped-flow
+      :duration="10"
+    />
+    <el-empty v-if="list.length === 0" description="没有任务" />
+    <ul v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-8 gap-y-4">
       <el-backtop :right="50" :bottom="100" />
       <el-card
         shadow="never"
-        :body-class="'!py-1 !px-2'"
-        class="h-fit w-2/5 sm:w-1/3 md:w-1/5 lg:w-1/4 xl:w-1/4 bg-white !rounded-lg flex flex-col justify-between hover:border-primary hover:cursor-pointer"
+        :body-class="'relative !py-1 !px-2'"
+        class="group !overflow-visible h-fit bg-white !rounded-lg flex flex-col justify-between hover:border-primary hover:cursor-pointer"
         v-for="(
           { brand, state, handleType, mappingHandleType, createTime, startDateTime, endDateTime },
           index
@@ -85,16 +126,15 @@ onBeforeMount(() => {
         @mouseenter="pointerIndex = index"
         @mouseleave="pointerIndex = null"
       >
-        <!-- <Transition name="el-fade-in" :duration="500">
-          <el-button
-            @click="removeOne(list[index])"
-            v-if="(pointerIndex || pointerIndex === 0) && pointerIndex === index && !state"
-            type="danger"
-            size="small"
-            :icon="CloseBold"
-            circle
-          ></el-button>
-        </Transition> -->
+        <el-button
+          class="absolute -top-2 -right-2 invisible"
+          :class="{ 'group-hover:visible': !state }"
+          @click="removeOne(list[index])"
+          type="danger"
+          size="small"
+          :icon="CloseBold"
+          circle
+        ></el-button>
         <ul class="">
           <li class="flex justify-between">
             <p class="truncate">{{ brand }}</p>
