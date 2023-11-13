@@ -9,6 +9,11 @@ const router = createRouter({
       redirect: { name: 'list' }
     },
     {
+      path: '/diffData',
+      name: 'diffData',
+      component: () => import('@/views/diffData/index.vue')
+    },
+    {
       path: '/runData/updateByBrand',
       children: [
         {
