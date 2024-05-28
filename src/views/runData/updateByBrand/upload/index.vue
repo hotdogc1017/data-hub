@@ -10,6 +10,7 @@ import { useLoading } from '@/stores/loading'
 
 const router = useRouter()
 const axios = namedAxios('runData')
+const uploadBaseURL = ref(import.meta.env.VITE_REQUEST_BASE_URI)
 const loading = useLoading()
 let failedList = ref<Failed[]>([])
 let switchUpload = ref(true)
@@ -42,7 +43,7 @@ function handleSuccess(res: TaskMode[]) {
       <div class="flex flex-col">
         <el-upload
           drag
-          action="http://localhost:9001/runData/readByExcel"
+          :action="`${uploadBaseURL}/runData/readByExcel`"
           multiple
           :on-success="handleSuccess"
         >

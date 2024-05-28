@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as monaco from 'monaco-editor'
 
 const editorContainer = ref<HTMLElement | null>(null)
 
 interface Props {
-  original: object
-  modified: object
+  original: any
+  modified: any
 }
 
 const props = defineProps<Props>()
 
-onMounted(() => {
-  // 动态加载 monaco-editor，避免打包体积过大
-  import('monaco-editor/esm/vs/editor/editor.api').then(() => {
-    createDiffEditor(props.original, props.modified)
-  })
+watch([() => props.original, () => props.modified], () => {
+  if (editor) {
+    editor.dispose()
+  }
+  loadEditor()
 })
 
 onUnmounted(() => {
@@ -48,6 +48,12 @@ function createDiffEditor(original: any, modified: any) {
       modified: modifiedModel
     })
   }
+}
+
+const loadEditor = () => {
+  import('monaco-editor/esm/vs/editor/editor.api').then(() => {
+    createDiffEditor(props.original, props.modified)
+  })
 }
 </script>
 
