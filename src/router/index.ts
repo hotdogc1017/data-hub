@@ -5,7 +5,6 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      // component: () => import("@/layouts/DataHubBody.vue"),
       redirect: { name: 'list' }
     },
     {

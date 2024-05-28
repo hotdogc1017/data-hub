@@ -1,31 +1,24 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
-import { namedAxios } from '@/utils/request.ts'
+import { ref, onBeforeMount, computed } from 'vue'
+import { namedAxios } from '@/utils/request'
 import { useRouter } from 'vue-router'
 
 import MonacoDiffEditor from '@/components/globals/MonacoDiffEditor.vue'
 
 let index = ref(1)
 const router = useRouter()
-let oldData = ref({
-  id: 6,
-  name: 'Student 6',
-  score: 95,
-  age: 20,
-  major: 'Computer Science',
-  year: 'Junior',
-  email: 'student6@example.com'
-})
-let newData = ref({
-  id: 7,
-  name: 'Student 7',
-  score: 89,
-  age: 21,
-  major: 'Mathematics',
-  year: 'Senior',
-  email: 'student7@example.com'
-})
+let oldData = ref('')
+let newData = ref('')
+const showOld = ref(false)
+const showNew = ref(false)
 const request = namedAxios('runData')
+
+const parsedData = computed(() => {
+  return {
+    oldData: tryJSONParse(oldData.value),
+    newData: tryJSONParse(newData.value)
+  }
+})
 
 async function getNext() {
   const { data } = await request.post(
@@ -36,23 +29,43 @@ async function getNext() {
   console.log(data)
 }
 
+const tryJSONParse = (str: string) => {
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    console.error(`${str}无法解析为 JSON 格式`)
+    return str
+  }
+}
+
 async function clear() {
   await request.post('/clearVerify')
 }
 
 onBeforeMount(async () => {
-  await getNext()
+  // await getNext()
 })
 </script>
 
 <template>
   <div class="h-full">
-    <div class="my-4">
-      <el-button @click="getNext" type="primary" round>下一个</el-button>
-      <el-button @click="clear" type="primary" round>清空</el-button>
+    <div class="my-4 flex gap-2">
       <el-button @click="router.push({ name: 'list' })" type="primary" round>任务列表</el-button>
+      <el-button @click="showOld = true" :type="oldData ? 'success' : 'primary'" link>{{
+        oldData ? '左侧已填充' : '填充左侧'
+      }}</el-button>
+      <el-button link :type="newData ? 'success' : 'primary'" @click="showNew = true">{{
+        newData ? '右侧已填充' : '填充右侧'
+      }}</el-button>
     </div>
-    <MonacoDiffEditor :original="oldData" :modified="newData" />
+    <MonacoDiffEditor :original="parsedData.oldData" :modified="parsedData.newData" />
+
+    <el-dialog v-model="showOld" title="">
+      <el-input v-model="oldData" :row="50" type="textarea"></el-input>
+    </el-dialog>
+    <el-dialog v-model="showNew" title="">
+      <el-input v-model="newData" :row="50" type="textarea"></el-input>
+    </el-dialog>
   </div>
 </template>
 
