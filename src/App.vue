@@ -11,7 +11,9 @@ const loading = useLoading()
 const animationUrl = useLoadingAnimationUrl()
 
 watchEffect(() => {
-  lottiePlayer.value?.load(animationUrl.url.value)
+  if (loading.state) {
+    lottiePlayer.value?.load(animationUrl.url.value)
+  }
 })
 </script>
 
